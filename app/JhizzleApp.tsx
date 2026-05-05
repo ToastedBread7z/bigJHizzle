@@ -105,7 +105,13 @@ export function JhizzleApp() {
     [showToast],
   );
 
-  const fallbackVotesText = useCallback((_pollId: string) => `${randomVotes()} VOTES · RESULTS UPDATE ON VOTE`, []);
+  const fallbackVotesText = useCallback(
+    (_pollId: string) => {
+      void _pollId;
+      return `${randomVotes()} VOTES · RESULTS UPDATE ON VOTE`;
+    },
+    [],
+  );
 
   const vote = useCallback(
     (pollId: string, chosenIdx: number) => {

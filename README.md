@@ -1,30 +1,5 @@
 # Jhizzle App
 
-A small Next.js app built as a static site and deployed to GitHub Pages.
-
-## Prereqs
-
-- Node.js 20+ (LTS recommended)
-- npm (comes with Node)
-
-## Setup (local dev)
-
-From the repo root:
-
-- Install dependencies: `npm ci`
-- Start dev server: `npm run dev`
-- Open: `http://localhost:3000`
-
-If it says the port is in use, stop the other server or run `npm run dev -- --port 3001`.
-
-## Editing site text/content
-
-All display text + structured content is centralized in:
-
-- [app/jhizzle/content.tsx](app/jhizzle/content.tsx)
-
-This is the main file your friend should edit to rewrite copy without touching UI logic.
-
 ## Project structure (quick map)
 
 - [app/JhizzleApp.tsx](app/JhizzleApp.tsx): main client container (state + wiring)
@@ -38,24 +13,13 @@ This repo is configured to deploy via GitHub Actions.
 
 ### One-time setup (first publish)
 
-1. Create a repo on GitHub
-	- GitHub → **New repository**
-	- Name it whatever you want (example: `jhizzle-app`)
-	- Keep it **Public** (recommended for Pages) or Private (Pages can still work depending on your plan)
-
-2. Push this project to that repo
-	- In a terminal from this project folder:
-	  - Add the remote: `git remote add origin <your-repo-url>`
-	  - Push your branch: `git push -u origin master`
-		 - If your branch is `main`, use `git push -u origin main`
-
-3. Enable GitHub Pages (GitHub UI)
+1. Enable GitHub Pages (GitHub UI)
 	- Repo → **Settings → Pages**
 	- Under **Build and deployment** → **Source**: choose **GitHub Actions**
 
-4. Trigger a deploy
+2. Trigger a deploy
 	- Push any commit to `main` or `master`
-	  - The workflow file is [./.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml)
+	  - The workflow should run and build an output: [./.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml)
 
 ### Confirm it deployed
 
@@ -66,9 +30,7 @@ This repo is configured to deploy via GitHub Actions.
 2. Repo → **Settings → Pages**
 	- You should see “Your site is live at …”
 
-After the workflow completes, the site will be available at:
-
-- `https://<owner>.github.io/<repo>/`
+After the workflow completes, the site will be available
 
 ### If it doesn’t show up
 

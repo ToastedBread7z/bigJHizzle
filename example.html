@@ -1,0 +1,3330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jhizzle GO/AT — The Unofficial Record</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Bebas+Neue&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg2: #111113;
+      --bg3: #1a1a1e;
+      --bg4: #222228;
+      --line: rgba(255, 255, 255, 0.07);
+      --line2: rgba(255, 255, 255, 0.14);
+      --text: #e8e6e3;
+      --mute: #666672;
+      --ash: #44444e;
+      --red: #ff3b30;
+      --orange: #ff9500;
+      --green: #32d74b;
+      --blue: #0a84ff;
+      --purple: #bf5af2;
+      --yellow: #ffd60a;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --display: 'Bebas Neue', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--ash);
+    }
+
+    /* ── PAGES ── */
+    .page {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      padding: 10px 20px;
+      font-size: 12px;
+      color: var(--text);
+      z-index: 9999;
+      transition: transform 0.3s ease, opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      height: 52px;
+      background: rgba(10, 10, 11, 0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 0;
+    }
+
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 22px;
+      letter-spacing: 1px;
+      color: var(--text);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-right: 8px;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .nav-logo:hover {
+      color: var(--red);
+    }
+
+    .nav-pronoun {
+      font-size: 10px;
+      color: var(--mute);
+      margin-right: auto;
+      padding-top: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .nav-links button {
+      background: none;
+      border: none;
+      color: var(--mute);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 0 12px;
+      height: 52px;
+      cursor: pointer;
+      border-left: 1px solid var(--line);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+
+    .nav-links button:hover,
+    .nav-links button.active {
+      color: var(--text);
+    }
+
+    .nav-fight {
+      background: var(--red) !important;
+      color: #fff !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-fight:hover {
+      background: #cc2a20 !important;
+      color: #fff !important;
+    }
+
+    /* mobile */
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      border-left: 1px solid var(--line);
+      color: var(--mute);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 14px;
+      height: 52px;
+      line-height: 52px;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      z-index: 998;
+      background: rgba(10, 10, 11, 0.97);
+      border-bottom: 1px solid var(--line);
+      flex-direction: column;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu button {
+      background: none;
+      border: none;
+      color: var(--mute);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 14px 24px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      transition: color 0.12s;
+    }
+
+    .mobile-menu button:hover,
+    .mobile-menu button.m-active {
+      color: var(--text);
+    }
+
+    .mobile-menu .m-fight {
+      color: var(--red) !important;
+      font-weight: 700;
+    }
+
+    /* ── TICKER ── */
+    .ticker {
+      height: 32px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .ticker-label {
+      background: var(--red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 12px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      letter-spacing: 1px;
+    }
+
+    .ticker-track {
+      display: flex;
+      animation: scroll 80s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-track span {
+      font-size: 11px;
+      color: var(--mute);
+      padding: 0 32px;
+    }
+
+    .ticker-track span b {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding-top: 52px;
+    }
+
+    .hero-inner {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 48px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.4;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes gridPulse {
+
+      0%,
+      100% {
+        opacity: 0.3
+      }
+
+      50% {
+        opacity: 0.5
+      }
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 59, 48, 0.09) 0%, transparent 70%);
+      pointer-events: none;
+      animation: glowPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+
+      0%,
+      100% {
+        opacity: 0.6;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.1)
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      color: var(--mute);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow span {
+      color: var(--red);
+    }
+
+    /* animated title chars */
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(72px, 10vw, 140px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title .line2 {
+      color: var(--red);
+    }
+
+    .hero-title .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: charIn 0.4s forwards;
+    }
+
+    @keyframes charIn {
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 13px;
+      color: var(--mute);
+      max-width: 560px;
+      line-height: 1.9;
+      margin-bottom: 40px;
+      border-left: 2px solid var(--ash);
+      padding-left: 16px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hstat {
+      border-top: 1px solid var(--line2);
+      padding-top: 12px;
+      min-width: 100px;
+      transition: border-color 0.2s;
+    }
+
+    .hstat:hover {
+      border-color: var(--red);
+    }
+
+    .hstat-v {
+      font-family: var(--display);
+      font-size: 36px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .hstat-v.r {
+      color: var(--red);
+    }
+
+    .hstat-v.g {
+      color: var(--green);
+    }
+
+    .hstat-v.o {
+      color: var(--orange);
+    }
+
+    .hstat-k {
+      font-size: 10px;
+      color: var(--mute);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── SECTION SHELL ── */
+    .pt {
+      padding-top: 52px;
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .section {
+      padding: 72px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .section:first-of-type {
+      border-top: none;
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .sec-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .sec-tag {
+      font-size: 11px;
+      color: var(--mute);
+    }
+
+    .sec-rule {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 12px 0 32px;
+    }
+
+    /* ── STATS GRID ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .stat {
+      background: var(--bg);
+      padding: 20px 16px;
+      transition: background 0.15s;
+    }
+
+    .stat:hover {
+      background: var(--bg2);
+    }
+
+    .stat-v {
+      font-family: var(--display);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-v.r {
+      color: var(--red);
+    }
+
+    .stat-v.o {
+      color: var(--orange);
+    }
+
+    .stat-v.g {
+      color: var(--green);
+    }
+
+    .stat-v.m {
+      color: var(--mute);
+    }
+
+    .stat-k {
+      font-size: 11px;
+      color: var(--mute);
+      line-height: 1.6;
+    }
+
+    /* ── QUOTE ── */
+    .quote {
+      border-left: 2px solid var(--red);
+      padding: 16px 20px;
+      background: var(--bg2);
+      margin: 24px 0;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
+    }
+
+    .quote:hover {
+      background: var(--bg3);
+      border-color: var(--orange);
+    }
+
+    .quote p {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 8px;
+    }
+
+    .quote p::before {
+      content: '> ';
+      color: var(--red);
+    }
+
+    .quote small {
+      font-size: 11px;
+      color: var(--mute);
+    }
+
+    /* ── LORE CARDS ── */
+    .lore-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .lore-card {
+      background: var(--bg);
+      padding: 24px;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .lore-card:hover {
+      background: var(--bg2);
+      transform: translateY(-1px);
+    }
+
+    .lore-tag {
+      font-size: 10px;
+      color: var(--mute);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .lore-tag.r {
+      color: var(--red);
+    }
+
+    .lore-tag.o {
+      color: var(--orange);
+    }
+
+    .lore-tag.g {
+      color: var(--green);
+    }
+
+    .lore-h {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .lore-b {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.9;
+    }
+
+    /* ── BALATRO BANNED ── */
+    .banned {
+      background: var(--bg2);
+      border: 1px solid rgba(255, 59, 48, 0.2);
+      padding: 40px;
+      text-align: center;
+      margin: 32px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .banned::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(255, 59, 48, 0.02) 20px, rgba(255, 59, 48, 0.02) 40px);
+    }
+
+    .banned-t {
+      font-family: var(--display);
+      font-size: 48px;
+      color: var(--red);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .banned-body {
+      font-size: 13px;
+      color: var(--mute);
+      line-height: 2.2;
+      position: relative;
+    }
+
+    .banned-body b {
+      color: var(--text);
+    }
+
+    /* ── CAREER TABLE ── */
+    .career {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .career tr {
+      border-bottom: 1px solid var(--line);
+      transition: background 0.12s;
+    }
+
+    .career tr:hover td {
+      background: var(--bg2);
+    }
+
+    .career td {
+      padding: 18px 12px;
+      font-size: 12px;
+      color: var(--mute);
+      vertical-align: top;
+    }
+
+    .career td:first-child {
+      white-space: nowrap;
+      width: 150px;
+      font-size: 11px;
+    }
+
+    .c-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .c-co {
+      font-size: 11px;
+      color: var(--mute);
+      margin-bottom: 8px;
+    }
+
+    .c-desc {
+      font-size: 12px;
+      font-style: italic;
+      line-height: 1.8;
+      color: var(--ash);
+    }
+
+    .c-red {
+      color: var(--red) !important;
+    }
+
+    .snip {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      padding: 10px 16px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
+    }
+
+    .snip:hover {
+      border-color: var(--line2);
+    }
+
+    .snip-ps {
+      color: var(--mute);
+    }
+
+    /* ── RATINGS ── */
+    .ratings {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      margin-bottom: 40px;
+    }
+
+    .rating {
+      background: var(--bg);
+      padding: 20px 12px;
+      text-align: center;
+      transition: background 0.15s;
+    }
+
+    .rating:hover {
+      background: var(--bg2);
+    }
+
+    .r-num {
+      font-family: var(--display);
+      font-size: 36px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .r-num.g {
+      color: var(--green);
+    }
+
+    .r-num.r {
+      color: var(--red);
+    }
+
+    .r-num.o {
+      color: var(--orange);
+    }
+
+    .r-lbl {
+      font-size: 10px;
+      color: var(--mute);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .rev {
+      border-bottom: 1px solid var(--line);
+      padding: 20px 0;
+      transition: padding-left 0.2s;
+    }
+
+    .rev:hover {
+      padding-left: 8px;
+    }
+
+    .rev-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .rev-stars {
+      font-size: 12px;
+      color: var(--orange);
+    }
+
+    .rev-tag {
+      font-size: 11px;
+      color: var(--mute);
+    }
+
+    .rev-tag.r {
+      color: var(--red);
+    }
+
+    .rev-body {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.9;
+    }
+
+    .rev-src {
+      font-size: 11px;
+      color: var(--ash);
+      margin-top: 6px;
+    }
+
+    /* ── THREAT TABLE ── */
+    .threat {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .threat tr {
+      border-bottom: 1px solid var(--line);
+      transition: background 0.1s;
+    }
+
+    .threat tr:hover td {
+      background: var(--bg2);
+    }
+
+    .threat td {
+      padding: 10px 8px;
+      font-size: 12px;
+    }
+
+    .threat td:first-child {
+      color: var(--mute);
+    }
+
+    .threat td:last-child {
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .t-r {
+      color: var(--red);
+    }
+
+    .t-g {
+      color: var(--green);
+    }
+
+    .t-o {
+      color: var(--orange);
+    }
+
+    .t-m {
+      color: var(--ash);
+      font-style: italic;
+    }
+
+    /* ── INVESTIGATION ── */
+    .faq {
+      border-bottom: 1px solid var(--line);
+      padding: 16px 0;
+    }
+
+    .faq-q {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .faq-q:hover .faq-label {
+      color: var(--red);
+    }
+
+    .faq-label {
+      transition: color 0.15s;
+    }
+
+    .faq-m {
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .faq-a {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.9;
+      padding-left: 22px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .faq-a.open {
+      max-height: 200px;
+    }
+
+    .status {
+      font-weight: 700;
+    }
+
+    .status.r {
+      color: var(--red);
+    }
+
+    .status.o {
+      color: var(--orange);
+    }
+
+    /* ── INTERACTIVE POLLS ── */
+    .polls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .poll {
+      background: var(--bg);
+      padding: 24px;
+    }
+
+    .poll-q {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .poll-o {
+      margin-bottom: 12px;
+    }
+
+    .poll-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .poll-lbl {
+      color: var(--mute);
+    }
+
+    .poll-pct {
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.3s;
+    }
+
+    .poll-bar-bg {
+      height: 3px;
+      background: var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poll-bar {
+      height: 100%;
+      background: var(--text);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .poll-bar.r {
+      background: var(--red);
+    }
+
+    .poll-bar.o {
+      background: var(--orange);
+    }
+
+    .poll-bar.g {
+      background: var(--green);
+    }
+
+    .poll-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      background: none;
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: all 0.15s;
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+
+    .poll-btn:hover {
+      background: var(--bg2);
+      color: var(--text);
+      border-color: var(--line2);
+    }
+
+    .poll-btn.voted {
+      color: var(--green);
+      border-color: rgba(50, 215, 75, 0.3);
+      background: rgba(50, 215, 75, 0.05);
+    }
+
+    .poll-votes {
+      font-size: 10px;
+      color: var(--ash);
+      margin-top: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── FIGHT NIGHT ── */
+    .fight-page {
+      padding-top: 52px;
+      background: var(--bg);
+    }
+
+    .fight-hero {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 24px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fight-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(255, 59, 48, 0.13) 0%, transparent 70%);
+      animation: fightPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes fightPulse {
+
+      0%,
+      100% {
+        opacity: 0.7
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    .fight-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .fight-title {
+      font-family: var(--display);
+      font-size: clamp(60px, 12vw, 160px);
+      line-height: 0.85;
+      letter-spacing: 3px;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .fight-title .vs {
+      color: var(--red);
+      display: block;
+      animation: vsFlash 3s ease-in-out infinite;
+    }
+
+    @keyframes vsFlash {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.6
+      }
+    }
+
+    .fight-subtitle {
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    /* countdown */
+    .countdown {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .cd-block {
+      text-align: center;
+    }
+
+    .cd-num {
+      font-family: var(--display);
+      font-size: clamp(40px, 8vw, 80px);
+      line-height: 1;
+      color: var(--text);
+      min-width: 80px;
+      display: block;
+      transition: color 0.3s;
+    }
+
+    .cd-num.urgent {
+      color: var(--red);
+    }
+
+    .cd-num.done {
+      color: var(--green);
+    }
+
+    .cd-label {
+      font-size: 10px;
+      color: var(--mute);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .cd-sep {
+      font-family: var(--display);
+      font-size: 60px;
+      color: var(--red);
+      line-height: 1;
+      padding-top: 4px;
+    }
+
+    .fight-status {
+      font-size: 12px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    .fight-status.live {
+      color: var(--red);
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.3
+      }
+    }
+
+    .fight-status.over {
+      color: var(--green);
+    }
+
+    .fight-status.upcoming {
+      color: var(--mute);
+    }
+
+    /* fighter cards */
+    .fight-cards {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      max-width: 900px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .fighter {
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      padding: 32px 24px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .fighter.holbein {
+      border-color: rgba(50, 215, 75, 0.2);
+    }
+
+    .fighter.holbein:hover {
+      border-color: rgba(50, 215, 75, 0.4);
+    }
+
+    .fighter.aiden {
+      border-color: rgba(255, 59, 48, 0.2);
+    }
+
+    .fighter.aiden:hover {
+      border-color: rgba(255, 59, 48, 0.4);
+    }
+
+    .fighter-name {
+      font-family: var(--display);
+      font-size: 36px;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .fighter.holbein .fighter-name {
+      color: var(--green);
+    }
+
+    .fighter.aiden .fighter-name {
+      color: var(--red);
+    }
+
+    .fighter-alias {
+      font-size: 11px;
+      color: var(--mute);
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .fighter-stats {
+      text-align: left;
+    }
+
+    .f-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .f-stat:last-child {
+      border-bottom: none;
+    }
+
+    .f-key {
+      color: var(--mute);
+    }
+
+    .f-val {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .f-val.g {
+      color: var(--green);
+    }
+
+    .f-val.r {
+      color: var(--red);
+    }
+
+    .f-val.o {
+      color: var(--orange);
+    }
+
+    .vs-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      background: var(--bg3);
+      border-top: 1px solid var(--line2);
+      border-bottom: 1px solid var(--line2);
+    }
+
+    .vs-text {
+      font-family: var(--display);
+      font-size: 48px;
+      color: var(--red);
+    }
+
+    .fight-moves {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      max-width: 900px;
+      margin: 32px auto 0;
+    }
+
+    .move-col {
+      background: var(--bg);
+      padding: 24px;
+    }
+
+    .move-title {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .move-title.g {
+      color: var(--green);
+    }
+
+    .move-title.r {
+      color: var(--red);
+    }
+
+    .move {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+      padding: 8px;
+      transition: background 0.12s;
+      border-radius: 2px;
+    }
+
+    .move:hover {
+      background: var(--bg2);
+    }
+
+    .move-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .move-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .move-desc {
+      font-size: 11px;
+      color: var(--mute);
+      line-height: 1.7;
+    }
+
+    /* joker card */
+    .joker-section {
+      max-width: 900px;
+      margin: 48px auto 0;
+    }
+
+    .joker-card {
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      border: 3px solid var(--purple);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: jokerGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes jokerGlow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(191, 90, 242, 0.2)
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(191, 90, 242, 0.4)
+      }
+    }
+
+    .joker-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 60px rgba(191, 90, 242, 0.5) !important;
+    }
+
+    .joker-card:active {
+      transform: scale(0.98);
+    }
+
+    .joker-card::before {
+      content: 'J';
+      position: absolute;
+      top: 8px;
+      left: 16px;
+      font-family: var(--display);
+      font-size: 32px;
+      color: rgba(191, 90, 242, 0.3);
+    }
+
+    .joker-card::after {
+      content: 'J';
+      position: absolute;
+      bottom: 8px;
+      right: 16px;
+      font-family: var(--display);
+      font-size: 32px;
+      color: rgba(191, 90, 242, 0.3);
+      transform: rotate(180deg);
+    }
+
+    .joker-title {
+      font-family: var(--display);
+      font-size: 48px;
+      color: var(--purple);
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    .joker-sub {
+      font-size: 11px;
+      color: var(--mute);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .joker-desc {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+
+    .joker-effect {
+      background: rgba(191, 90, 242, 0.1);
+      border: 1px solid rgba(191, 90, 242, 0.3);
+      display: inline-block;
+      padding: 8px 20px;
+      font-size: 12px;
+      color: var(--purple);
+      margin-bottom: 12px;
+    }
+
+    .joker-rarity {
+      font-family: var(--display);
+      font-size: 24px;
+      color: var(--purple);
+      letter-spacing: 2px;
+    }
+
+    .joker-hint {
+      font-size: 10px;
+      color: var(--ash);
+      margin-top: 12px;
+      letter-spacing: 1px;
+    }
+
+    /* ── ALIASES PAGE ── */
+    .alias-page {
+      padding-top: 52px;
+    }
+
+    .alias-hero {
+      padding: 80px 32px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .alias-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 8vw, 100px);
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
+
+    .alias-sub {
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 1px;
+    }
+
+    .alias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      margin: 32px 0;
+    }
+
+    .alias-card {
+      background: var(--bg);
+      padding: 24px;
+      transition: background 0.15s, transform 0.15s;
+      cursor: default;
+    }
+
+    .alias-card:hover {
+      background: var(--bg2);
+      transform: translateY(-1px);
+    }
+
+    .alias-num {
+      font-size: 10px;
+      color: var(--ash);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .alias-name {
+      font-family: var(--display);
+      font-size: 28px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .alias-name.r {
+      color: var(--red);
+    }
+
+    .alias-name.g {
+      color: var(--green);
+    }
+
+    .alias-name.o {
+      color: var(--orange);
+    }
+
+    .alias-name.p {
+      color: var(--purple);
+    }
+
+    .alias-desc {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.8;
+    }
+
+    /* ── LORE PAGE ── */
+    .lore-page {
+      padding-top: 52px;
+    }
+
+    .lore-hero {
+      padding: 80px 32px 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .lore-hero-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 8vw, 100px);
+      letter-spacing: 3px;
+    }
+
+    /* ── MEMES PAGE ── */
+    .memes-page {
+      padding-top: 52px;
+    }
+
+    .memes-hero {
+      padding: 80px 32px 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .memes-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 8vw, 100px);
+      letter-spacing: 3px;
+    }
+
+    .meme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      margin: 32px 0;
+    }
+
+    .meme-card {
+      background: var(--bg);
+      padding: 32px 24px;
+      transition: background 0.15s, transform 0.15s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .meme-card:hover {
+      background: var(--bg2);
+      transform: translateY(-1px);
+    }
+
+    .meme-tag {
+      font-size: 10px;
+      color: var(--mute);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .meme-tag.r {
+      color: var(--red);
+    }
+
+    .meme-tag.o {
+      color: var(--orange);
+    }
+
+    .meme-tag.g {
+      color: var(--green);
+    }
+
+    .meme-tag.p {
+      color: var(--purple);
+    }
+
+    .meme-emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    .meme-card:hover .meme-emoji {
+      transform: scale(1.15);
+    }
+
+    .meme-name {
+      font-family: var(--display);
+      font-size: 24px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .meme-desc {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .meme-quote {
+      font-size: 11px;
+      color: var(--ash);
+      font-style: italic;
+      border-left: 2px solid var(--line);
+      padding-left: 10px;
+      line-height: 1.7;
+    }
+
+    .meme-copy-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ash);
+      background: none;
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.15s;
+    }
+
+    .meme-copy-btn:hover {
+      color: var(--text);
+      border-color: var(--line2);
+    }
+
+    /* ── LINKEDIN PAGE ── */
+    .li-page {
+      padding-top: 52px;
+    }
+
+    .li-hero {
+      padding: 80px 32px 40px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .li-hero-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 8vw, 100px);
+      letter-spacing: 3px;
+    }
+
+    .li-profile {
+      background: var(--bg2);
+      border: 1px solid var(--line2);
+      padding: 32px;
+      margin: 32px 0;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .li-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 2px solid var(--line2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-size: 32px;
+      color: var(--mute);
+      transition: border-color 0.2s;
+    }
+
+    .li-avatar:hover {
+      border-color: var(--green);
+    }
+
+    .li-name {
+      font-family: var(--display);
+      font-size: 32px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .li-pronoun {
+      font-size: 11px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .li-headline {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.8;
+      margin-bottom: 8px;
+    }
+
+    .li-meta {
+      font-size: 11px;
+      color: var(--ash);
+    }
+
+    .li-connections {
+      font-size: 12px;
+      color: var(--blue);
+      margin-top: 6px;
+    }
+
+    /* ── FEED ── */
+    .feed {
+      border: 1px solid var(--line);
+    }
+
+    .feed-i {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      transition: background 0.12s, padding-left 0.15s;
+    }
+
+    .feed-i:last-child {
+      border-bottom: none;
+    }
+
+    .feed-i:hover {
+      background: var(--bg2);
+      padding-left: 28px;
+    }
+
+    .feed-who {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mute);
+    }
+
+    .feed-time {
+      font-size: 10px;
+      color: var(--ash);
+      margin-top: 3px;
+    }
+
+    .feed-txt {
+      font-size: 12px;
+      color: var(--mute);
+      line-height: 1.9;
+    }
+
+    /* ── EASTER EGG OVERLAY ── */
+    #egg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 40px;
+      cursor: pointer;
+    }
+
+    #egg-overlay.show {
+      display: flex;
+    }
+
+    #egg-content {
+      max-width: 600px;
+    }
+
+    #egg-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 10vw, 100px);
+      color: var(--red);
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    #egg-body {
+      font-size: 14px;
+      color: var(--mute);
+      line-height: 2;
+      margin-bottom: 24px;
+    }
+
+    #egg-close {
+      font-size: 11px;
+      color: var(--ash);
+      letter-spacing: 2px;
+    }
+
+    /* ── KONAMI / SECRET ── */
+    .konami-flash {
+      animation: konamiFlash 0.3s ease;
+    }
+
+    @keyframes konamiFlash {
+      0% {
+        background: rgba(255, 59, 48, 0.15)
+      }
+
+      100% {
+        background: transparent
+      }
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .reveal.on {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 32px 0;
+      margin-top: 80px;
+    }
+
+    .foot-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .foot-links {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .foot-links button {
+      flex: 1;
+      background: none;
+      border: none;
+      border-right: 1px solid var(--line);
+      color: var(--mute);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 12px 8px;
+      cursor: pointer;
+      min-width: 80px;
+      transition: color 0.12s;
+    }
+
+    .foot-links button:last-child {
+      border-right: none;
+    }
+
+    .foot-links button:hover {
+      color: var(--text);
+    }
+
+    .foot-bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--ash);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .foot-secret {
+      font-size: 10px;
+      color: var(--bg3);
+      transition: color 0.3s;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .foot-secret:hover {
+      color: var(--ash);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .nav-hamburger {
+        display: block;
+      }
+
+      .fight-cards {
+        grid-template-columns: 1fr;
+        gap: 1px;
+      }
+
+      .vs-col {
+        padding: 16px;
+        border: 1px solid var(--line2);
+        border-left: none;
+        border-right: none;
+      }
+
+      .fight-moves {
+        grid-template-columns: 1fr;
+      }
+
+      .li-profile {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        padding: 80px 24px 48px;
+      }
+
+      .wrap {
+        padding: 0 16px;
+      }
+
+      .alias-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .meme-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cd-sep {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOAST -->
+  <div id="toast"></div>
+
+  <!-- EASTER EGG OVERLAY -->
+  <div id="egg-overlay" onclick="closeEgg()">
+    <div id="egg-content">
+      <div id="egg-title">BALATRO: BANNED</div>
+      <div id="egg-body">you found the void.<br>this is sep 0.<br>you are in the space between atoms.<br>the whole bean
+        is watching.<br><br>he still has never played balatro.</div>
+      <div id="egg-close">[ click anywhere to return from the void ]</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo" onclick="showPage('home')" id="logo-click" title="click me">JHIZZLE</span>
+    <span class="nav-pronoun">GO/AT</span>
+    <div class="nav-links">
+      <button onclick="showPage('home')" id="nav-home" class="active">home</button>
+      <button onclick="showPage('aliases')" id="nav-aliases">names</button>
+      <button onclick="showPage('lore')" id="nav-lore">lore</button>
+      <button onclick="showPage('memes')" id="nav-memes">memes</button>
+      <button onclick="showPage('linkedin')" id="nav-linkedin">linkedin</button>
+      <button onclick="showPage('fight')" id="nav-fight" class="nav-fight">⚔ fight night</button>
+    </div>
+    <button class="nav-hamburger" onclick="toggleMobile()" id="hamburger">☰</button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <button onclick="showPage('home');toggleMobile()">home</button>
+    <button onclick="showPage('aliases');toggleMobile()">names (21)</button>
+    <button onclick="showPage('lore');toggleMobile()">lore</button>
+    <button onclick="showPage('memes');toggleMobile()">memes</button>
+    <button onclick="showPage('linkedin');toggleMobile()">linkedin · sep 0</button>
+    <button class="m-fight" onclick="showPage('fight');toggleMobile()">⚔ fight night</button>
+  </div>
+
+  <!-- ═══════════ HOME PAGE ═══════════ -->
+  <div id="page-home" class="page active">
+    <div class="ticker">
+      <div class="ticker-label">BREAKING</div>
+      <div class="ticker-track">
+        <span><b>BALATRO: BANNED.</b> personally. by the big bean. he has never played it.</span>
+        <span>salary investigation week 6: <b>still $0.</b> multiple databases. all void.</span>
+        <span><b>sep 0</b> is not a real date. it remains. physicists notified. no response.</span>
+        <span>jake broke his leg. came in next day. <b>said nothing.</b> students found out from the cast.</span>
+        <span>"it's like the <b>worst podcast i've ever heard</b>" — mr. holbein, to Aiden, unprompted</span>
+        <span>laptop screen angle: unknown. content: <b>classified.</b> 0/3 students succeeded.</span>
+        <span>pronouns: <b>go/at.</b> official. canon. on the linkedin.</span>
+        <span>fight night: <b>may 20th · 8:45 AM</b> · Aiden vs holbein · allen isd steam center</span>
+        <span>new alias unlocked: <b>LeGoat Holbein.</b> no explanation given. none needed.</span>
+        <span>the joker card is interactive. <b>click it.</b></span>
+        <span><b>BALATRO: BANNED.</b> personally. by the big bean. he has never played it.</span>
+        <span>salary investigation week 6: <b>still $0.</b> multiple databases. all void.</span>
+        <span><b>sep 0</b> is not a real date. it remains. physicists notified. no response.</span>
+        <span>jake broke his leg. came in next day. <b>said nothing.</b> students found out from the cast.</span>
+        <span>"it's like the <b>worst podcast i've ever heard</b>" — mr. holbein, to Aiden, unprompted</span>
+        <span>laptop screen angle: unknown. content: <b>classified.</b> 0/3 students succeeded.</span>
+        <span>pronouns: <b>go/at.</b> official. canon. on the linkedin.</span>
+        <span>fight night: <b>may 20th · 8:45 AM</b> · Aiden vs holbein · allen isd steam center</span>
+        <span>new alias unlocked: <b>LeGoat Holbein.</b> no explanation given. none needed.</span>
+        <span>the joker card is interactive. <b>click it.</b></span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+          <div class="hero-eyebrow">the <span>unofficial</span> record · allen isd steam center · 2025–26</div>
+          <div class="hero-title" id="hero-title">
+            <span id="jake-chars"></span><br>
+            <span class="line2" id="holbein-chars"></span>
+          </div>
+          <div class="hero-subtitle">
+            NICKNAMES: void king · the inevitable · target barista<br>
+            currently: cs teacher · our sunshine · on his laptop<br>
+            pronouns: go/at · connections: ∞ · salary: $0<br>
+            balatro: banned · roblox: bypassed · silk song: documented · screen: classified
+          </div>
+          <div class="hero-stats">
+            <div class="hstat" title="six weeks of investigation. all void.">
+              <div class="hstat-v r">$0</div>
+              <div class="hstat-k">salary on file</div>
+            </div>
+            <div class="hstat">
+              <div class="hstat-v o">∞</div>
+              <div class="hstat-k">connections</div>
+            </div>
+            <div class="hstat">
+              <div class="hstat-v g">10/10</div>
+              <div class="hstat-k">student rating</div>
+            </div>
+            <div class="hstat" title="september does not have a zeroth day.">
+              <div class="hstat-v r">Sep 0</div>
+              <div class="hstat-k">linkedin start date</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <!-- overview stats -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] overview</span><span class="sec-tag">the numbers</span>
+        </div>
+        <hr class="sec-rule">
+        <div class="stats reveal">
+          <div class="stat">
+            <div class="stat-v r">$0</div>
+            <div class="stat-k">salary on file<br>(6 wks · all void)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v o">∞</div>
+            <div class="stat-k">linkedin<br>connections</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v m">0</div>
+            <div class="stat-k">balatro games<br>(never. personally.)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v r">1</div>
+            <div class="stat-k">broken legs<br>(unreported)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v o">3</div>
+            <div class="stat-k">fictional<br>linkedin jobs</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v m">0</div>
+            <div class="stat-k">students who've<br>seen the screen</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v r">Sep 0</div>
+            <div class="stat-k">linkedin start<br>(not a real date)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-v g">4.9</div>
+            <div class="stat-k">student rating<br>(ratemyprofessor)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- quote -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[!] quote of the year</span></div>
+        <hr class="sec-rule">
+        <div class="quote reveal"
+          onclick="showToast('quote copied to clipboard'); navigator.clipboard && navigator.clipboard.writeText('you just yap about random stuff for 5-0 minutes. it\'s like the worst podcast i\'ve ever heard. — mr. holbein')"
+          title="click to copy">
+          <p>you just yap about random stuff for 5-0 minutes. it's like the worst podcast i've ever heard.</p>
+          <small>— jake holbein · directly to Aiden · class · year 2025–26 · five. zero. · students still processing ·
+            click to copy</small>
+        </div>
+      </div>
+
+      <!-- quick lore -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] quick lore</span><span class="sec-tag">documented
+            incidents</span></div>
+        <hr class="sec-rule">
+        <div class="lore-grid reveal">
+          <div class="lore-card">
+            <div class="lore-tag r">[x] banned · permanent · no buildup</div>
+            <div class="lore-h">balatro: open before he even sat down</div>
+            <div class="lore-b">Aiden opened his Chromebook. balatro was already there. no loading, no hiding — just
+              immediately, completely open. jake banned it on the spot. has never played balatro himself. the ban is
+              permanent.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag r">[!] injury · unreported</div>
+            <div class="lore-h">broke his leg. came in next day. said nothing.</div>
+            <div class="lore-b">flag football injury. came in. started the session. students found out from the cast.
+              did it hurt? why didn't he say anything? QUESTIONS.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag">[?] ongoing · classified</div>
+            <div class="lore-h">laptop mystery: 47+ minutes. screen unknown.</div>
+            <div class="lore-b">content: classified. eye contact maintained while typing. screen angle: physically
+              impossible to see around. three students tried. zero succeeded.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag o">[+] class consensus</div>
+            <div class="lore-h">"our sunshine" — unanimous. never addressed.</div>
+            <div class="lore-b">the big bean is warm. does he know we call him this? does he like it? we haven't asked.
+              mutual respect. the laptop continues.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- polls -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] polls</span><span class="sec-tag">click to vote ·
+            results update live</span></div>
+        <hr class="sec-rule">
+        <div class="polls reveal" id="polls-container">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ratings -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] ratings</span><span class="sec-tag">ratemyprofessor ·
+            allen isd edition</span></div>
+        <hr class="sec-rule">
+        <div class="ratings reveal">
+          <div class="rating">
+            <div class="r-num o">4.9</div>
+            <div class="r-lbl">overall</div>
+          </div>
+          <div class="rating">
+            <div class="r-num g">5.0</div>
+            <div class="r-lbl">chill level</div>
+          </div>
+          <div class="rating">
+            <div class="r-num o">5.0</div>
+            <div class="r-lbl">our sunshine</div>
+          </div>
+          <div class="rating">
+            <div class="r-num r">0%</div>
+            <div class="r-lbl">teaches much</div>
+          </div>
+          <div class="rating">
+            <div class="r-num r">$0</div>
+            <div class="r-lbl">salary found</div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="rev">
+            <div class="rev-head"><span class="rev-stars">★★★★★</span><span class="rev-tag">would take again</span>
+            </div>
+            <div class="rev-body">"he said 'just do your work' then opened his laptop and did his own work. i've never
+              felt more seen. what is on the screen? i've asked every day. this is somehow the best learning environment
+              i've been in."</div>
+            <div class="rev-src">cs · allen isd steam center</div>
+          </div>
+          <div class="rev">
+            <div class="rev-head"><span class="rev-stars">★★★★★</span><span class="rev-tag">our sunshine</span></div>
+            <div class="rev-body">"on his laptop the whole time but somehow you still feel guided? like the sun. you
+              don't look directly at it but you know it's there. does he know we call him our sunshine? we haven't
+              asked."</div>
+            <div class="rev-src">cs · allen isd steam center</div>
+          </div>
+          <div class="rev">
+            <div class="rev-head"><span class="rev-stars">★★★★★</span><span class="rev-tag r">balatro situation</span>
+            </div>
+            <div class="rev-body">"he banned balatro without a word. went into network settings. done. he has never
+              played balatro. i have so many questions. is the ban permanent? i will not be the one to ask."</div>
+            <div class="rev-src">cs · allen isd steam center · eyewitness</div>
+          </div>
+          <div class="rev">
+            <div class="rev-head"><span class="rev-stars">★★★★☆</span><span class="rev-tag r">broken leg
+                situation</span></div>
+            <div class="rev-body">"broke his leg. came in next day. did not bring it up. started the session. i only
+              knew because of the cast. minus one star because i want answers and he has provided none."</div>
+            <div class="rev-src">cs · allen isd steam center</div>
+          </div>
+          <div class="rev">
+            <div class="rev-head"><span class="rev-stars">★★★★★</span><span class="rev-tag g">legoat era</span></div>
+            <div class="rev-body">"called him legoat holbein once as a joke. he acknowledged it with a nod. we have not
+              spoken of it since. we never will. it is simply true."</div>
+            <div class="rev-src">cs · allen isd steam center · witness to history</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- threat assessment -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] threat assessment</span></div>
+        <hr class="sec-rule">
+        <table class="threat reveal">
+          <tr>
+            <td>[+] being our sunshine</td>
+            <td class="t-o">☀ MAX</td>
+          </tr>
+          <tr>
+            <td>[?] laptop mystery level</td>
+            <td class="t-m">classified</td>
+          </tr>
+          <tr>
+            <td>[+] chill level</td>
+            <td class="t-g">absolute max</td>
+          </tr>
+          <tr>
+            <td>[x] network admin power</td>
+            <td class="t-r">banned balatro (permanent)</td>
+          </tr>
+          <tr>
+            <td>[+] cyberpatriot</td>
+            <td class="t-g">top 10 nation</td>
+          </tr>
+          <tr>
+            <td>[+] linkedin lore depth</td>
+            <td class="t-o">∞ (void king era)</td>
+          </tr>
+          <tr>
+            <td>[?] vibe coding status</td>
+            <td class="t-m">actively ongoing</td>
+          </tr>
+          <tr>
+            <td>[x] durability</td>
+            <td class="t-r">broke leg · came in next day · said nothing</td>
+          </tr>
+          <tr>
+            <td>[x] balatro enjoyment</td>
+            <td class="t-r">0% (never played · never will)</td>
+          </tr>
+          <tr>
+            <td>[x] salary transparency</td>
+            <td class="t-r">$0 found across all databases</td>
+          </tr>
+          <tr>
+            <td>[?] sep 0 explanation</td>
+            <td class="t-m">pending since sep 0</td>
+          </tr>
+          <tr>
+            <td>[+] goat status</td>
+            <td class="t-g">LeGoat confirmed · no elaboration</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- investigation (now accordion) -->
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[?] investigation</span><span class="sec-tag">click to
+            expand · all unanswered · ongoing</span></div>
+        <hr class="sec-rule">
+        <div class="reveal" id="faq-container"></div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="foot-inner">
+        <div class="foot-links">
+          <button onclick="showPage('home')">home</button>
+          <button onclick="showPage('aliases')">names (21)</button>
+          <button onclick="showPage('lore')">lore</button>
+          <button onclick="showPage('memes')">memes</button>
+          <button onclick="showPage('linkedin')">linkedin · sep 0</button>
+          <button onclick="showPage('fight')">⚔ fight night</button>
+        </div>
+        <div class="foot-bottom">
+          <span>© 2026 · made with zero permission from jhizzle, void king, the inevitable, and the balatro
+            banisher</span>
+          <span class="foot-secret" onclick="triggerEgg('void')" title="...">not assigned · not suggested · not hinted
+            at · go/at</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ═══════════ FIGHT NIGHT ═══════════ -->
+  <div id="page-fight" class="page fight-page">
+    <div class="fight-hero">
+      <div class="fight-bg"></div>
+      <div class="fight-eyebrow">allen isd steam center · officially unofficial · may 20th 8:45 AM</div>
+      <div class="fight-title">FIGHT<br><span class="vs">NIGHT</span></div>
+      <div class="fight-subtitle">Aiden Goontiago · the balatro beacon · vs · jake holbein · the balatro banisher</div>
+      <div class="fight-status" id="fight-status">loading...</div>
+      <div class="countdown" id="countdown">
+        <div class="cd-block"><span class="cd-num" id="cd-days">--</span>
+          <div class="cd-label">days</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-hours">--</span>
+          <div class="cd-label">hours</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-mins">--</span>
+          <div class="cd-label">minutes</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-secs">--</span>
+          <div class="cd-label">seconds</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap" style="padding-top:48px;padding-bottom:80px;">
+      <div class="fight-cards reveal">
+        <div class="fighter holbein">
+          <div class="fighter-name">HOLBEIN</div>
+          <div class="fighter-alias">the balatro banisher · go/at · our sunshine</div>
+          <div class="fighter-stats">
+            <div class="f-stat"><span class="f-key">record</span><span class="f-val g">W by default (admin
+                access)</span></div>
+            <div class="f-stat"><span class="f-key">power move</span><span class="f-val g">the balatro ban</span></div>
+            <div class="f-stat"><span class="f-key">durability</span><span class="f-val o">broke leg · came in next
+                day</span></div>
+            <div class="f-stat"><span class="f-key">network access</span><span class="f-val g">full admin</span></div>
+            <div class="f-stat"><span class="f-key">salary</span><span class="f-val r">$0 (unbothered)</span></div>
+            <div class="f-stat"><span class="f-key">connections</span><span class="f-val g">∞</span></div>
+            <div class="f-stat"><span class="f-key">origin</span><span class="f-val o">void king · sep 0</span></div>
+            <div class="f-stat"><span class="f-key">weakness</span><span class="f-val r">none found</span></div>
+          </div>
+        </div>
+        <div class="vs-col">
+          <div class="vs-text">VS</div>
+        </div>
+        <div class="fighter aiden">
+          <div class="fighter-name">AIDEN</div>
+          <div class="fighter-alias">the balatro beacon · the yapper · class clown</div>
+          <div class="fighter-stats">
+            <div class="f-stat"><span class="f-key">record</span><span class="f-val r">got balatro banned</span></div>
+            <div class="f-stat"><span class="f-key">power move</span><span class="f-val r">15 min yap session</span>
+            </div>
+            <div class="f-stat"><span class="f-key">durability</span><span class="f-val o">somehow still going</span>
+            </div>
+            <div class="f-stat"><span class="f-key">balatro access</span><span class="f-val r">BANNED (permanent)</span>
+            </div>
+            <div class="f-stat"><span class="f-key">podcast quality</span><span class="f-val r">worst ever (per
+                holbein)</span></div>
+            <div class="f-stat"><span class="f-key">class energy</span><span class="f-val o">chaotic · max</span></div>
+            <div class="f-stat"><span class="f-key">known for</span><span class="f-val o">yapping · balatro ·
+                chaos</span></div>
+            <div class="f-stat"><span class="f-key">weakness</span><span class="f-val r">network admin (holbein)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fight-moves reveal">
+        <div class="move-col">
+          <div class="move-title g">HOLBEIN MOVESET</div>
+          <div class="move">
+            <div class="move-icon">🚫</div>
+            <div>
+              <div class="move-name">THE BALATRO BAN</div>
+              <div class="move-desc">enters network settings in real time. bans balatro. zero warning. permanent.
+                signature move. never even played balatro.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">☀️</div>
+            <div>
+              <div class="move-name">OUR SUNSHINE AURA</div>
+              <div class="move-desc">passive ability. makes the whole class feel warm. currently active. nobody has
+                asked about it. nobody will.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">💻</div>
+            <div>
+              <div class="move-name">CLASSIFIED SCREEN</div>
+              <div class="move-desc">angles laptop to be physically impossible to see. maintains eye contact. typing
+                speed: impressive. content: unknown.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">🦴</div>
+            <div>
+              <div class="move-name">BROKEN LEG STOICISM</div>
+              <div class="move-desc">broke leg. came in next day. started session. said nothing. students found out from
+                the cast.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">🎙️</div>
+            <div>
+              <div class="move-name">WORST PODCAST DECLARATION</div>
+              <div class="move-desc">"it's like the worst podcast i've ever heard." delivered directly to Aiden.
+                unprompted. students still processing.</div>
+            </div>
+          </div>
+        </div>
+        <div class="move-col">
+          <div class="move-title r">AIDEN MOVESET</div>
+          <div class="move">
+            <div class="move-icon">🃏</div>
+            <div>
+              <div class="move-name">BALATRO BEACON</div>
+              <div class="move-desc">ran balatro as a file to bypass wi-fi restrictions. worked temporarily. now
+                permanently banned. this is his legacy.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">🎤</div>
+            <div>
+              <div class="move-name">15 MINUTE YAP SESSION</div>
+              <div class="move-desc">yaps about random stuff for 15 minutes straight. mr. holbein described this as
+                worse than the worst podcast he has ever heard.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">😂</div>
+            <div>
+              <div class="move-name">CLASS CLOWN ENERGY</div>
+              <div class="move-desc">passive ability. always active. gets roasted constantly. somehow still going.
+                resilience stat: surprisingly high.</div>
+            </div>
+          </div>
+          <div class="move">
+            <div class="move-icon">🔁</div>
+            <div>
+              <div class="move-name">SOMEHOW STILL GOING</div>
+              <div class="move-desc">gets roasted by the void king himself. balatro: banned. called worst podcast. still
+                shows up. this is the real power.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="joker-section reveal">
+        <div class="joker-card" onclick="triggerEgg('joker')" title="click me">
+          <div class="joker-title">BALATRO BANISHER</div>
+          <div class="joker-sub">legendary joker · allen isd · non-transferable</div>
+          <div class="joker-desc">the void king himself. banned balatro from the entire class. has never played balatro.
+            not once. the balance of the universe depends on this.</div>
+          <div class="joker-effect">if played hand contains Aiden, gain ×10 mult</div><br>
+          <div class="joker-rarity">✦ LEGENDARY ✦</div>
+          <div class="joker-hint">[ click to activate ]</div>
+        </div>
+      </div>
+
+      <div class="section reveal">
+        <div class="sec-head"><span class="sec-label">[?] prediction</span><span class="sec-tag">analysts weigh in ·
+            click to vote</span></div>
+        <hr class="sec-rule">
+        <div class="polls" id="fight-polls-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ALIASES ═══════════ -->
+  <div id="page-aliases" class="page alias-page">
+    <div class="alias-hero wrap">
+      <div class="alias-title">ALL<br>THE<br><span style="color:var(--red)">NAMES</span></div>
+      <div class="alias-sub" style="margin-top:12px;">21 confirmed · none acknowledged by subject · all canon</div>
+    </div>
+    <div class="wrap">
+      <div class="alias-grid">
+        <div class="alias-card">
+          <div class="alias-num">#01</div>
+          <div class="alias-name r">Jhizzle</div>
+          <div class="alias-desc">the original. the one on his linkedin. the foundation. go/at.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#02</div>
+          <div class="alias-name g">The Whole Bean</div>
+          <div class="alias-desc">he is all the coffee bean. not a part. the whole thing.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#03</div>
+          <div class="alias-name">Coffee Bean</div>
+          <div class="alias-desc">related to the whole bean. shorter. also accurate.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#04</div>
+          <div class="alias-name o">Jakester</div>
+          <div class="alias-desc">the jakester. affectionate. earned.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#05</div>
+          <div class="alias-name">Jakey</div>
+          <div class="alias-desc">diminutive form. also affectionate. also earned.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#06</div>
+          <div class="alias-name">Jah</div>
+          <div class="alias-desc">reverent. one syllable. says it all.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#07</div>
+          <div class="alias-name o">Our Sunshine</div>
+          <div class="alias-desc">unanimous class consensus. never directly addressed to his face. the warmth is real.
+          </div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#08</div>
+          <div class="alias-name r">The Aiden Annihilator</div>
+          <div class="alias-desc">earned via the worst podcast quote. assigned by students post-incident.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#09</div>
+          <div class="alias-name r">The Balatro Banisher</div>
+          <div class="alias-desc">most powerful origin story in allen isd history. banned balatro. never played it.
+          </div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#10</div>
+          <div class="alias-name">Big Bean</div>
+          <div class="alias-desc">the big bean. the larger version of coffee bean. distinguished.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#11</div>
+          <div class="alias-name p">The Inevitable</div>
+          <div class="alias-desc">starbucks era title. "i am the unavoidable conclusion to every process." 2 yrs 1 mo.
+          </div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#12</div>
+          <div class="alias-name r">Void King</div>
+          <div class="alias-desc">sep 0 — mar 2020. void. "i am the sovereign ruler of the absolute zero." the origin.
+          </div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#13</div>
+          <div class="alias-name">Big JHizzle</div>
+          <div class="alias-desc">extended version of jhizzle. the big prefix adds gravitas.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#14</div>
+          <div class="alias-name g">The Laptop Whisperer</div>
+          <div class="alias-desc">awarded for sustained classified laptop activity exceeding 47 consecutive minutes. no
+            one has seen the screen.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#15</div>
+          <div class="alias-name">Jake</div>
+          <div class="alias-desc">his actual name. sometimes used for clarity. rarely needed.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#16</div>
+          <div class="alias-name">The Consensus</div>
+          <div class="alias-desc">may–aug 2023. one above all. "i am the singular point of agreement for the universe."
+          </div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#17</div>
+          <div class="alias-name p">One Above All</div>
+          <div class="alias-desc">the employer during the consensus era. technically also a name.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#18</div>
+          <div class="alias-name">Your Local Barista</div>
+          <div class="alias-desc">linkedin headline. target era. feb–may 2023. evans, georgia.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#19</div>
+          <div class="alias-name o">The Stoic</div>
+          <div class="alias-desc">awarded post broken-leg incident. came in next day. said nothing. started the session.
+            students found out from the cast.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#20</div>
+          <div class="alias-name g">LeGoat Holbein</div>
+          <div class="alias-desc">no need for explanations. acknowledged once. with a nod. never spoken of again.</div>
+        </div>
+        <div class="alias-card">
+          <div class="alias-num">#21</div>
+          <div class="alias-name p">Cursor Coder Island</div>
+          <div class="alias-desc">appears in the linkedin headline. is it a place? a state of being? a server? we are
+            afraid to ask.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LORE ═══════════ -->
+  <div id="page-lore" class="page lore-page">
+    <div class="lore-hero wrap">
+      <div class="hero-eyebrow"
+        style="margin-bottom:16px;font-size:11px;color:var(--mute);letter-spacing:2px;text-transform:uppercase;">
+        documented incidents · allen isd · 2025–26</div>
+      <div class="lore-hero-title">THE<br><span style="color:var(--red)">LORE</span></div>
+    </div>
+    <div class="wrap" style="padding-bottom:80px;">
+      <div class="section">
+        <div class="banned reveal">
+          <div class="banned-t">[x] BALATRO: BANNED</div>
+          <p class="banned-body">
+            Aiden played balatro in class.<br>
+            he ran it as <b>a file to bypass the wi-fi filter.</b><br>
+            mr. holbein caught him.<br>
+            Jake banned it. <b>forever. personally.</b><br>
+            has <b>never played balatro himself.</b> not once.<br>
+            students named him "the balatro banisher."<br>
+            Aiden is now named "the balatro beacon."<br>
+            <b>the most powerful origin story in allen isd history.</b>
+          </p>
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[!] all documented incidents</span></div>
+        <hr class="sec-rule">
+        <div class="lore-grid reveal">
+          <div class="lore-card">
+            <div class="lore-tag r">[!] injury · unreported · flag football</div>
+            <div class="lore-h">the broken leg incident</div>
+            <div class="lore-b">jake holbein broke his leg playing flag football. came into class the very next day. did
+              not mention it. started the session. students only found out from the cast on his leg. did it hurt? was he
+              in pain the whole time? why didn't he tell anyone? all open questions. no statement has been provided.
+            </div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag">[?] ongoing · classified · daily</div>
+            <div class="lore-h">the laptop mystery</div>
+            <div class="lore-b">jake has been on his laptop for extended periods throughout the school year. the screen
+              is angled in a way described as "physically impossible to see around." 2,134 students have attempted to
+              look. zero have succeeded. eye contact is maintained while typing. what is on the screen? this question
+              has never been answered. it has also never been asked directly. this feels correct somehow.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag o">[+] unanimous · class consensus · ongoing</div>
+            <div class="lore-h">our sunshine</div>
+            <div class="lore-b">at some point during the school year, the class reached unanimous consensus that jake
+              holbein is "our sunshine." this has never been communicated to him directly. does he know? does he like
+              it? would he be pleased? all unknown. the nickname persists. it seems accurate. he is on his laptop. the
+              warmth is still there.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag r">[!] incident · verbal · class · unprompted</div>
+            <div class="lore-h">the worst podcast quote</div>
+            <div class="lore-b">Aiden was yapping about random stuff for approximately 15 minutes. mr. holbein delivered
+              the following: "you just yap about random stuff for 15 minutes. it's like the worst podcast i've ever
+              heard." said directly to Aiden. class has not recovered. remains one of the most powerful statements in
+              allen isd history.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag g">[+] cyber · competitive · top 10 nation</div>
+            <div class="lore-h">cyberpatriot: top 10 in the nation</div>
+            <div class="lore-b">while the class investigated his salary (result: $0) and catalogued his laptop activity
+              (result: classified), jake holbein quietly coached a cyberpatriot team to a top 10 national ranking. he
+              did not brag about this. it was simply true.</div>
+          </div>
+          <div class="lore-card">
+            <div class="lore-tag r">[?] salary · 6 weeks · all databases</div>
+            <div class="lore-h">the $0 salary investigation</div>
+            <div class="lore-b">students searched public records for jake holbein's salary. six weeks. multiple
+              databases. all returned $0. a fictional ttc customer named marcus t. delaney has more financial
+              documentation than the real subject of investigation. marcus is not real. jake is. the investigation
+              continues. marcus is doing fine.</div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] live feed</span></div>
+        <hr class="sec-rule">
+        <div class="feed reveal">
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">the whole bean</div>
+              <div class="feed-time">right now</div>
+            </div>
+            <div class="feed-txt">opened his laptop. screen angled away. content: unknown. eye contact with row 3:
+              maintained. typing speed: impressive. this is ongoing.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">the balatro banisher</div>
+              <div class="feed-time">origin story · all-time</div>
+            </div>
+            <div class="feed-txt">Aiden played balatro. jake caught him. jake banned it. has never played balatro. now
+              called "the balatro banisher." allen isd history made.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">our sunshine</div>
+              <div class="feed-time">this morning</div>
+            </div>
+            <div class="feed-txt">walked into the room. the energy shifted. he sat down. opened the laptop. the moment
+              was warm and immediately mysterious. what is on the screen? not rhetorical.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">the stoic</div>
+              <div class="feed-time">post-injury · unreported</div>
+            </div>
+            <div class="feed-txt">broke leg in flag football. came in the next day. did not mention it. started the
+              session. students found out from the cast. did it hurt? QUESTIONS.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">void king</div>
+              <div class="feed-time">sep 0 — present</div>
+            </div>
+            <div class="feed-txt">the linkedin entry remains. sep 0. not a real date. still there. physicists:
+              unresponsive. the void endures.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">legoat holbein</div>
+              <div class="feed-time">ongoing</div>
+            </div>
+            <div class="feed-txt">coached cyberpatriot to top 10 in the nation. salary according to public records: $0.
+              the goat does not require documentation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ MEMES ═══════════ -->
+  <div id="page-memes" class="page memes-page">
+    <div class="memes-hero wrap">
+      <div class="hero-eyebrow"
+        style="margin-bottom:16px;font-size:11px;color:var(--mute);letter-spacing:2px;text-transform:uppercase;">
+        certified · lore-accurate · click to copy</div>
+      <div class="memes-title">THE<br><span style="color:var(--red)">MEMES</span></div>
+    </div>
+    <div class="wrap" style="padding-bottom:80px;">
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] certified lore-accurate meme formats</span><span
+            class="sec-tag">click any card to copy the template</span></div>
+        <hr class="sec-rule">
+        <div class="meme-grid reveal">
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'WHOLE BEAN ON HIS LAPTOP\n[redacted]\nstudents: what are you doing?\nwhole bean: [maintains eye contact]\nstudents: [cannot see screen]\nwhole bean: [continues typing]\n\ncontent: classified.')">
+            <div class="meme-tag">[?] ongoing</div>
+            <span class="meme-emoji">💻</span>
+            <div class="meme-name">Laptop Content: Classified</div>
+            <div class="meme-desc">the format. a student tries to see the screen. the screen cannot be seen. the whole
+              bean maintains eye contact. nothing is resolved.</div>
+            <div class="meme-quote">"content: classified. screen angle: physically impossible. eye contact: maintained."
+            </div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'BALATRO: BANNED\n[Aiden plays balatro]\n[mr. holbein opens network settings]\n[balatro is banned]\n[mr. holbein has never played balatro]\n[Aiden has never recovered]\n\nStatus: Permanent.')">
+            <div class="meme-tag r">[x] banned · permanent</div>
+            <span class="meme-emoji">🚫</span>
+            <div class="meme-name">Balatro: Banned</div>
+            <div class="meme-desc">the origin. a student plays balatro. the void king acts. balatro is gone. the void
+              king has never played balatro. the ban is permanent.</div>
+            <div class="meme-quote">"banned personally. never played it. this is the way."</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'POV: you broke your leg\n[options]\na) go to the hospital ✗\nb) tell someone ✗\nc) stay home ✗\nd) come in next day, start the session, say nothing, let students find out from the cast ✓\n\n— mr. holbein, stoic of allen isd')">
+            <div class="meme-tag r">[!] unreported injury</div>
+            <span class="meme-emoji">🦴</span>
+            <div class="meme-name">The Stoic Protocol</div>
+            <div class="meme-desc">broke his leg. came in the next day. said nothing. started the session. students
+              found out from the cast. pov format goes hard.</div>
+            <div class="meme-quote">"he came in. he started the session. students found out from the cast."</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card" onclick="copyMeme(this,'\" you just yap about random stuff for 15 minutes.\nit\'s like
+            the worst podcast i\'ve ever heard.\"\n— mr. holbein\n— directly to Aiden\n— unprompted\n— class still
+            processing')">
+            <div class="meme-tag o">[!] quote · unprompted · devastating</div>
+            <span class="meme-emoji">🎙️</span>
+            <div class="meme-name">Worst Podcast Ever</div>
+            <div class="meme-desc">the quote. delivered directly. unprompted. no further context provided. class has not
+              recovered. students still processing.</div>
+            <div class="meme-quote">"it's like the worst podcast i've ever heard." — mr. holbein, to Aiden, 2026</div>
+            <button class="meme-copy-btn">[ copy quote ]</button>
+          </div>
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'SALARY INVESTIGATION WEEK [N]\n\nDatabases searched: [all of them]\nRecords found: 0\nSalary on file: $0\n\nMarcus T. Delaney (not real): financially documented\nJake Holbein (real): $0\n\nUpdate: Marcus thriving. Investigation continues.')">
+            <div class="meme-tag r">[?] week 6 · all void</div>
+            <span class="meme-emoji">🔍</span>
+            <div class="meme-name">The $0 Investigation</div>
+            <div class="meme-desc">six weeks. multiple public records databases. all returned $0. marcus t. delaney
+              (fictional) has more documentation. marcus is not real.</div>
+            <div class="meme-quote">"salary on file: $0. marcus is thriving. jake is unbothered."</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'Sep 0\n[not a real date]\n[it\'s on the linkedin]\n[it has not been corrected]\n[physicists were notified]\n[they did not respond]\n[the void king does not correct the void]\n\nSep 0 remains.')">
+            <div class="meme-tag p">[?] sep 0 · not a real date · remains</div>
+            <span class="meme-emoji">📅</span>
+            <div class="meme-name">Sep 0: The Origin</div>
+            <div class="meme-desc">september has no zeroth day. the linkedin entry says sep 0. it has not been
+              corrected. physicists were consulted. no response. the void king does not correct the void.</div>
+            <div class="meme-quote">"sep 0. not a real date. still there. the void endures."</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card"
+            onclick="copyMeme(this,'OUR SUNSHINE\n[jake holbein enters the room]\n[energy: shifted]\n[vibe: warm, somehow]\n[he sits down]\n[he opens the laptop]\n[screen: angled away]\n[warmth: still there]\n\nwe have not told him.\nwe will not tell him.\nhe is our sunshine.')">
+            <div class="meme-tag o">[+] unanimous · warm · never stated</div>
+            <span class="meme-emoji">☀️</span>
+            <div class="meme-name">Our Sunshine</div>
+            <div class="meme-desc">the class reached unanimous consensus. it has never been said to his face. the warmth
+              is real. the laptop screen remains classified.</div>
+            <div class="meme-quote">"he is our sunshine. we have not told him. we will not tell him."</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+          <div class="meme-card" onclick="copyMeme(this,'VOID KING ERA\nSep 0 – Mar 2020\n\n\" I am the sovereign ruler
+            of the absolute zero.\nI manage the vast, silent spaces between atoms\nand the infinite emptiness that
+            precedes creation.\nI don\'t fill roles; I define the vacancy\nthat others cannot.\"\n\n— Jhizzle, Void
+            King, LinkedIn, Sep 0')">
+            <div class="meme-tag r">[+] sep 0 · sovereign · void</div>
+            <span class="meme-emoji">👑</span>
+            <div class="meme-name">Void King Era</div>
+            <div class="meme-desc">his greatest linkedin era. sep 0 to mar 2020. ruler of the absolute zero. manager of
+              the emptiness between atoms. peak lore.</div>
+            <div class="meme-quote">"i am the sovereign ruler of the absolute zero." — void king, sep 0</div>
+            <button class="meme-copy-btn">[ copy template ]</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LINKEDIN ═══════════ -->
+  <div id="page-linkedin" class="page li-page">
+    <div class="li-hero wrap">
+      <div class="hero-eyebrow"
+        style="margin-bottom:16px;font-size:11px;color:var(--mute);letter-spacing:2px;text-transform:uppercase;">∞
+        connections · go/at · jake has ALL the recent posts</div>
+      <div class="li-hero-title">LINKEDIN</div>
+    </div>
+    <div class="wrap" style="padding-bottom:80px;">
+      <div class="section">
+        <div class="li-profile reveal">
+          <div class="li-avatar">J</div>
+          <div>
+            <div class="li-name">Jhizzle</div>
+            <div class="li-pronoun">GO/AT</div>
+            <div class="li-headline">The Whole Bean, Coffee Bean, Jakester, Jakey, Jah, Our Sunshine, The Aiden
+              Annihilator, The Balatro Banisher | Your Local Barista | Cursor Coder Island</div>
+            <div class="li-meta">Allen, Texas, United States</div>
+            <div class="li-connections">∞ connections</div>
+          </div>
+        </div>
+
+        <div class="snip reveal"><span><span class="snip-ps">$</span> public-records-search "jake holbein"
+            salary</span><span style="color:var(--red);font-size:11px;">result: 0 salary records found · 6 weeks ·
+            multiple databases · all void</span></div>
+        <div class="snip reveal"><span><span class="snip-ps">$</span> grep "sep 0"
+            linkedin/jhizzle/experience</span><span style="color:var(--orange);font-size:11px;">found: 1 match · "Sep 0"
+            · not a real date · uncorrected since posting</span></div>
+        <div class="snip reveal"><span><span class="snip-ps">$</span> curl linkedin/jhizzle/activity
+            --latest</span><span style="color:var(--green);font-size:11px;">jake has ALL the recent posts · verbatim ·
+            we did not write this</span></div>
+
+        <div class="sec-head reveal" style="margin-top:32px;"><span class="sec-label">[+] experience</span></div>
+        <hr class="sec-rule">
+        <table class="career reveal">
+          <tr>
+            <td>Jul 2024 — Present</td>
+            <td>
+              <div class="c-role">[+] Computer Science Teacher</div>
+              <div class="c-co">Allen ISD · Full-time · Allen, Texas</div>
+              <div class="c-desc">current role. on laptop. content classified. cyberpatriot: top 10 nation. screen
+                angle: unknown. eye contact maintained. balatro: banned. salary: $0 on file. unbothered.</div>
+            </td>
+          </tr>
+          <tr>
+            <td>May 2023 — Aug 2023</td>
+            <td>
+              <div class="c-role">[+] The Consensus</div>
+              <div class="c-co">One Above All · 4 mos</div>
+              <div class="c-desc">"i serve as the singular point of agreement for the physical and metaphysical
+                universe. my primary function is to provide the 'Yes' that allows reality to continue functioning. i do
+                not attend meetings; i am the outcome toward which all meetings unknowingly trend."</div>
+            </td>
+          </tr>
+          <tr>
+            <td>Feb 2023 — May 2023</td>
+            <td>
+              <div class="c-role">[+] Barista / Team Member</div>
+              <div class="c-co">Target · Part-time · Evans, Georgia · 4 mos</div>
+              <div class="c-desc">customer-facing. inventory management. customer service. "miss you, inevitable." —
+                linkedin activity section, somehow.</div>
+            </td>
+          </tr>
+          <tr>
+            <td>Dec 2020 — Dec 2022</td>
+            <td>
+              <div class="c-role">[+] The Inevitable</div>
+              <div class="c-co">Starbucks · 2 yrs 1 mo</div>
+              <div class="c-desc">"i am the unavoidable conclusion to every process, project, and timeline. i do not
+                'apply' for positions; i am the outcome toward which your organization has been unknowingly drifting
+                since its inception. i don't start jobs; i fulfil the logical endpoint of your company's journey toward
+                me."</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="c-red">Sep 0 — Mar 2020</td>
+            <td>
+              <div class="c-role">[+] Void King</div>
+              <div class="c-co">Void</div>
+              <div class="c-desc">"i am the sovereign ruler of the absolute zero. i manage the vast, silent spaces
+                between atoms and the infinite emptiness that precedes creation. i don't fill roles; i define the
+                vacancy that others cannot."<br><br><span style="color:var(--orange)">note: "sep 0" is not a real date.
+                  september has no zeroth day. this entry has remained uncorrected since posting. physicists were
+                  notified. they did not respond.</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="sec-head reveal"><span class="sec-label">[+] activity</span><span class="sec-tag">jake has ALL the
+            recent posts · ∞ followers</span></div>
+        <hr class="sec-rule">
+        <div class="feed reveal">
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">jhizzle</div>
+              <div class="feed-time">most recent post</div>
+            </div>
+            <div class="feed-txt">jake has ALL the recent posts. the jhizzle is too great to showcase his recent posts
+              here. this is verbatim from the linkedin. we did not write this. it was already there.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">the inevitable</div>
+              <div class="feed-time">starbucks era</div>
+            </div>
+            <div class="feed-txt">two years one month as the inevitable at starbucks. what does that mean for a barista?
+              we have not asked. it was in the job description apparently.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">void king</div>
+              <div class="feed-time">sep 0 — the origin</div>
+            </div>
+            <div class="feed-txt">the void king era begins on sep 0. that date does not exist. the void king does not
+              care. the void king rules the absolute zero. this is consistent with his worldview.</div>
+          </div>
+          <div class="feed-i">
+            <div>
+              <div class="feed-who">cursor coder island</div>
+              <div class="feed-time">unknown</div>
+            </div>
+            <div class="feed-txt">appears in the linkedin headline. is it a place? a server? a metaphysical state? a
+              direct continuation of the void king era? no one has asked. this feels correct.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════
+    // POLLS DATA
+    // ══════════════════════════════
+    const pollsData = [
+      {
+        id: 'p1', question: "what is the whole bean doing on his laptop right now?",
+        options: [
+          { label: "vibe coding his own project", pct: 41, color: "" },
+          { label: "nobody knows. that's the point.", pct: 44, color: "r" },
+          { label: "sep 0 business (void management)", pct: 15, color: "o" }
+        ]
+      },
+      {
+        id: 'p2', question: "does jah know this page exists?",
+        options: [
+          { label: "he knows. he is unbothered.", pct: 47, color: "r" },
+          { label: "he doesn't know. this is worse.", pct: 38, color: "" },
+          { label: "he's reading it right now", pct: 15, color: "o" }
+        ]
+      },
+      {
+        id: 'p3', question: "which linkedin era hits hardest?",
+        options: [
+          { label: "void king (sep 0 era)", pct: 39, color: "r" },
+          { label: "the inevitable @ starbucks", pct: 33, color: "" },
+          { label: "the consensus (one above all)", pct: 28, color: "o" }
+        ]
+      }
+    ];
+    const fightPollsData = [
+      {
+        id: 'fp1', question: "who wins fight night?",
+        options: [
+          { label: "holbein (admin access · void king)", pct: 71, color: "g" },
+          { label: "Goontiago (chaos · yap power)", pct: 22, color: "r" },
+          { label: "draw (both too unhinged)", pct: 7, color: "o" }
+        ]
+      },
+      {
+        id: 'fp2', question: "how does it end?",
+        options: [
+          { label: "holbein bans Aiden from the network", pct: 58, color: "" },
+          { label: "Aiden yaps for 50 min · holbein escapes", pct: 28, color: "r" },
+          { label: "class watches. nobody intervenes.", pct: 14, color: "o" }
+        ]
+      }
+    ];
+    // vote state
+    const votes = {};
+
+    function buildPolls(data, containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = data.map(poll => {
+        return `<div class="poll" id="poll-${poll.id}">
+      <div class="poll-q">${poll.question}</div>
+      ${poll.options.map((o, i) => `
+        <div class="poll-o" id="opt-${poll.id}-${i}">
+          <div class="poll-row"><span class="poll-lbl">${o.label}</span><span class="poll-pct" id="pct-${poll.id}-${i}">${o.pct}%</span></div>
+          <div class="poll-bar-bg"><div class="poll-bar ${o.color}" id="bar-${poll.id}-${i}" style="width:${o.pct}%"></div></div>
+          <button class="poll-btn" onclick="vote('${poll.id}',${i})" id="btn-${poll.id}-${i}">[ vote: ${o.label} ]</button>
+        </div>
+      `).join('')}
+      <div class="poll-votes" id="votes-${poll.id}">${randomVotes()} VOTES · RESULTS UPDATE ON VOTE</div>
+    </div>`;
+      }).join('');
+    }
+
+    function randomVotes() {
+      return (Math.floor(Math.random() * 30000) + 10000).toLocaleString();
+    }
+
+    function vote(pollId, chosenIdx) {
+      const allPolls = [...pollsData, ...fightPollsData];
+      const poll = allPolls.find(p => p.id === pollId);
+      if (!poll) return;
+
+      // already voted → switch vote
+      const prev = votes[pollId];
+      if (prev === chosenIdx) { showToast('already voted for this option'); return; }
+
+      votes[pollId] = chosenIdx;
+      const total = poll.options.length;
+      let newPcts = poll.options.map((_, i) => i === chosenIdx ? 50 : Math.floor((100 - 50) / (total - 1)));
+      // normalize
+      const sum = newPcts.reduce((a, b) => a + b, 0);
+      newPcts = newPcts.map(p => Math.round(p * 100 / sum));
+
+      poll.options.forEach((_, i) => {
+        const pctEl = document.getElementById(`pct-${pollId}-${i}`);
+        const barEl = document.getElementById(`bar-${pollId}-${i}`);
+        const btnEl = document.getElementById(`btn-${pollId}-${i}`);
+        if (pctEl) pctEl.textContent = newPcts[i] + '%';
+        if (barEl) barEl.style.width = newPcts[i] + '%';
+        if (btnEl) {
+          if (i === chosenIdx) {
+            btnEl.classList.add('voted');
+            btnEl.textContent = '[ ✓ voted ]';
+          } else {
+            btnEl.classList.remove('voted');
+            btnEl.textContent = `[ vote: ${poll.options[i].label} ]`;
+          }
+        }
+      });
+      document.getElementById(`votes-${pollId}`).textContent = randomVotes() + ' VOTES · YOU VOTED · LIVE RESULTS';
+      showToast('vote registered');
+    }
+
+    // ══════════════════════════════
+    // FAQ ACCORDION
+    // ══════════════════════════════
+    const faqs = [
+      { q: "what is the whole bean doing on his laptop right now?", a: "three students have attempted to see the screen. zero have succeeded. the angle has been described as 'physically impossible.' what is on there? unknown. status: open · ongoing" },
+      { q: "why is sep 0 still on the linkedin?", a: "september has no zeroth day. this entry has remained uncorrected since posting. physicists were consulted. no response. is this intentional? is this part of the void king lore? status: open · unsolved" },
+      { q: "what is 'cursor coder island'?", a: "it appears in the linkedin headline. is it a place? a metaphysical state? a server? a direct continuation of the void king era? we are afraid to ask. status: open · we are afraid" },
+      { q: "salary investigation: why $0 across all databases?", a: "six weeks. multiple public record databases. all returned $0. a fictional customer named marcus t. delaney has more financial documentation than jake holbein. marcus is not real. jake is. this is uncomfortable. status: week 6 · marcus thriving" },
+      { q: "the broken leg — did it hurt? why say nothing?", a: "flag football. broke the leg. came in the very next day. started the session without comment. students found out from the cast. was he in pain the entire time? why tell nobody? status: open · no statement" },
+      { q: "has anyone ever directly asked him about any of this?", a: "no. there is an unspoken agreement that the laptop stays classified, the sunshine stays unnamed, and the void king is not questioned. this page is not a violation of the agreement. it is a tribute. status: ongoing · mutual respect preserved" }
+    ];
+
+    function buildFAQ() {
+      const container = document.getElementById('faq-container');
+      if (!container) return;
+      container.innerHTML = faqs.map((f, i) => `
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFAQ(${i})">
+        <span class="faq-m">?</span>
+        <span class="faq-label">${f.q}</span>
+      </div>
+      <div class="faq-a" id="faq-${i}">${f.a}</div>
+    </div>
+  `).join('');
+    }
+    function toggleFAQ(i) {
+      const el = document.getElementById(`faq-${i}`);
+      el.classList.toggle('open');
+    }
+
+    // ══════════════════════════════
+    // HERO TITLE ANIMATION
+    // ══════════════════════════════
+    function animateTitle() {
+      const jakeEl = document.getElementById('jake-chars');
+      const holbeinEl = document.getElementById('holbein-chars');
+      if (!jakeEl || !holbeinEl) return;
+      function makeChars(text, delay) {
+        return text.split('').map((c, i) => {
+          const sp = document.createElement('span');
+          sp.className = 'char';
+          sp.textContent = c;
+          sp.style.animationDelay = (delay + i * 0.06) + 's';
+          return sp;
+        });
+      }
+      jakeEl.append(...makeChars('JAKE', 0.2));
+      holbeinEl.append(...makeChars('HOLBEIN', 0.6));
+    }
+
+    // ══════════════════════════════
+    // COUNTDOWN — SMART STATUS
+    // ══════════════════════════════
+    function updateCountdown() {
+      const target = new Date('2026-05-20T08:45:00');
+      const now = new Date();
+      const diff = target - now;
+      const statusEl = document.getElementById('fight-status');
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+        document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+        document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+        if (days === 0) {
+          ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => document.getElementById(id).classList.add('urgent'));
+          if (statusEl) { statusEl.textContent = '● FIGHT DAY'; statusEl.className = 'fight-status live'; }
+        } else {
+          if (statusEl) { statusEl.textContent = `upcoming · ${days} day${days !== 1 ? 's' : ''} away`; statusEl.className = 'fight-status upcoming'; }
+        }
+      } else {
+        // past — check if same day
+        const fightDay = new Date('2026-05-20');
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (+today === +fightDay) {
+          // fight happening today
+          document.getElementById('cd-days').textContent = '00';
+          document.getElementById('cd-hours').textContent = '00';
+          document.getElementById('cd-mins').textContent = '00';
+          document.getElementById('cd-secs').textContent = '00';
+          ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => document.getElementById(id).classList.add('live'));
+          if (statusEl) { statusEl.textContent = '● IT\'S HAPPENING'; statusEl.className = 'fight-status live'; }
+        } else {
+          document.getElementById('cd-days').textContent = '00';
+          document.getElementById('cd-hours').textContent = '00';
+          document.getElementById('cd-mins').textContent = '00';
+          document.getElementById('cd-secs').textContent = '00';
+          ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => document.getElementById(id).classList.add('done'));
+          if (statusEl) { statusEl.textContent = '● FIGHT COMPLETE — VOID KING WINS (OBVIOUSLY)'; statusEl.className = 'fight-status over'; }
+        }
+      }
+    }
+
+    // ══════════════════════════════
+    // PAGE ROUTING
+    // ══════════════════════════════
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.mobile-menu button').forEach(b => b.classList.remove('m-active'));
+      document.getElementById('page-' + id).classList.add('active');
+      const navBtn = document.getElementById('nav-' + id);
+      if (navBtn) navBtn.classList.add('active');
+      window.scrollTo(0, 0);
+      initReveals();
+    }
+
+    // ══════════════════════════════
+    // MOBILE NAV
+    // ══════════════════════════════
+    function toggleMobile() {
+      const menu = document.getElementById('mobile-menu');
+      const btn = document.getElementById('hamburger');
+      menu.classList.toggle('open');
+      btn.textContent = menu.classList.contains('open') ? '✕' : '☰';
+    }
+
+    // ══════════════════════════════
+    // SCROLL REVEAL
+    // ══════════════════════════════
+    function initReveals() {
+      const els = document.querySelectorAll('.page.active .reveal');
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+      }, { threshold: 0.05 });
+      els.forEach(e => { e.classList.remove('on'); obs.observe(e); });
+    }
+
+    // ══════════════════════════════
+    // TOAST
+    // ══════════════════════════════
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // ══════════════════════════════
+    // MEME COPY
+    // ══════════════════════════════
+    function copyMeme(card, text) {
+      navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
+        showToast('template copied to clipboard');
+        const btn = card.querySelector('.meme-copy-btn');
+        if (btn) { const orig = btn.textContent; btn.textContent = '[ ✓ copied ]'; setTimeout(() => btn.textContent = orig, 2000); }
+      }).catch(() => showToast('copy: failed (try manually)'));
+    }
+
+    // ══════════════════════════════
+    // EASTER EGGS
+    // ══════════════════════════════
+    const eggs = {
+      void: {
+        title: 'YOU FOUND THE VOID',
+        body: 'this is sep 0.<br>you are in the space between atoms.<br>the salary: $0.<br>the screen: classified.<br>the balatro: banned.<br><br>the whole bean is watching.<br>he has never played balatro.'
+      },
+      joker: {
+        title: 'BALATRO BANISHER',
+        body: '✦ LEGENDARY ✦<br><br>effect: if played hand contains Aiden, gain ×10 mult.<br>rarity: one of a kind.<br>held by: jake holbein (void king era).<br><br>note: this card has never been played in balatro.<br>balatro is banned.'
+      },
+      logo: {
+        title: 'JHIZZLE GO/AT',
+        body: 'you clicked the logo.<br>the void king acknowledges you.<br><br>salary on file: $0<br>balatro: banned<br>laptop content: classified<br>sep 0: ongoing<br><br>he is on his laptop right now.'
+      }
+    };
+
+    function triggerEgg(type) {
+      const egg = eggs[type] || eggs.void;
+      document.getElementById('egg-title').textContent = egg.title;
+      document.getElementById('egg-body').innerHTML = egg.body;
+      document.getElementById('egg-overlay').classList.add('show');
+    }
+    function closeEgg() {
+      document.getElementById('egg-overlay').classList.remove('show');
+    }
+
+    // logo easter egg
+    document.getElementById('logo-click').addEventListener('click', function () {
+      if (Math.random() < 0.3) triggerEgg('logo');
+    });
+
+    // Konami code
+    const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let kIdx = 0;
+    document.addEventListener('keydown', e => {
+      if (e.key === konami[kIdx]) {
+        kIdx++;
+        if (kIdx === konami.length) {
+          kIdx = 0;
+          eggs.konami = { title: 'BALATRO: UNBANNED?', body: 'you entered the konami code.<br>the void king saw it.<br>balatro is still banned.<br>the konami code has no power here.<br><br>nice try.' };
+          triggerEgg('konami');
+        }
+      } else { kIdx = 0; }
+    });
+
+    // ══════════════════════════════
+    // INIT
+    // ══════════════════════════════
+    buildPolls(pollsData, 'polls-container');
+    buildPolls(fightPollsData, 'fight-polls-container');
+    buildFAQ();
+    animateTitle();
+    initReveals();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 # Jhizzle App
+# Project A
 
 ## Project structure (quick map)
 

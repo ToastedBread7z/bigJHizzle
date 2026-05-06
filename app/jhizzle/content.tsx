@@ -22,26 +22,26 @@ export const pollsData: PollData[] = [
     question: 'what is the whole bean doing on his laptop right now?',
     options: [
       { label: 'vibe coding his own project', pct: 41, color: '' },
-      { label: "nobody knows. that's the point.", pct: 44, color: 'r' },
-      { label: 'sep 0 business (void management)', pct: 15, color: 'o' },
+      { label: "nobody knows. that's the point", pct: 44, color: 'r' },
+      { label: 'managing the universe', pct: 15, color: 'o' },
     ],
   },
   {
     id: 'p2',
     question: 'does jah know this page exists?',
     options: [
-      { label: 'he knows. he is unbothered.', pct: 47, color: 'r' },
-      { label: "he doesn't know. this is worse.", pct: 38, color: '' },
-      { label: "he's reading it right now", pct: 15, color: 'o' },
+      { label: 'he knows, but is too nonchalant to care', pct: 47, color: 'r' },
+      { label: "he is pretending not to know until aidan hops on", pct: 38, color: '' },
+      { label: "he's right behind me isnt he", pct: 15, color: 'o' },
     ],
   },
   {
     id: 'p3',
-    question: 'which linkedin era hits hardest?',
+    question: 'what does jakey think of the balatro beacon?',
     options: [
-      { label: 'void king (sep 0 era)', pct: 39, color: 'r' },
-      { label: 'the inevitable @ starbucks', pct: 33, color: '' },
-      { label: 'the consensus (one above all)', pct: 28, color: 'o' },
+      { label: 'worst podcast ever heard', pct: 33, color: 'r' },
+      { label: 'what does he even do?', pct: 33, color: '' },
+      { label: 'counting the days until aidan graduates', pct: 34, color: 'o' },
     ],
   },
 ];
@@ -51,17 +51,17 @@ export const fightPollsData: PollData[] = [
     id: 'fp1',
     question: 'who wins fight night?',
     options: [
-      { label: 'holbein (admin access · void king)', pct: 71, color: 'g' },
-      { label: 'Goontiago (chaos · yap power)', pct: 22, color: 'r' },
-      { label: 'draw (both too unhinged)', pct: 7, color: 'o' },
+      { label: 'holbein (right behind me isnt he)', pct: 71, color: 'g' },
+      { label: 'Goontiago (worst podcast host)', pct: 22, color: 'r' },
+      { label: 'draw (impossible)', pct: 7, color: 'o' },
     ],
   },
   {
     id: 'fp2',
     question: 'how does it end?',
     options: [
-      { label: 'holbein bans Aiden from the network', pct: 58, color: '' },
-      { label: 'Aiden yaps for 50 min · holbein escapes', pct: 28, color: 'r' },
+      { label: 'holbein bans Aidan from existence', pct: 58, color: '' },
+      { label: 'Aidan yaps for 50 min · holbein escapes', pct: 28, color: 'r' },
       { label: 'class watches. nobody intervenes.', pct: 14, color: 'o' },
     ],
   },
@@ -753,7 +753,7 @@ export const linkedInContent = {
       ),
     },
     {
-      left: 'Sep 0 — Mar 2020',
+      left: 'Sep 0 — Mar 2026',
       leftClass: 'c-red',
       role: '[+] Void King',
       company: 'Void',
@@ -780,13 +780,13 @@ export const linkedInContent = {
     },
     {
       who: 'the inevitable',
-      time: 'starbucks era',
+      time: 'starbucks',
       text: 'two years one month as the inevitable at starbucks. what does that mean for a barista? we have not asked. it was in the job description apparently.',
     },
     {
       who: 'void king',
       time: 'sep 0 — the origin',
-      text: 'the void king era begins on sep 0. that date does not exist. the void king does not care. the void king rules the absolute zero. this is consistent with his worldview.',
+      text: 'the void king began existence on sep 0. this date should not exist. the void king does not care. the void king rules the vast universe.',
     },
     {
       who: 'cursor coder island',
